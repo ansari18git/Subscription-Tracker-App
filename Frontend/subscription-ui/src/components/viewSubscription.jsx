@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const ViewSubscription = () => {
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +15,7 @@ const ViewSubscription = () => {
       setError('');
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('/api/v1/subscriptions', {
+        const res = await fetch(`${API_BASE_URL}/subscriptions`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -36,7 +38,7 @@ const ViewSubscription = () => {
     if (!window.confirm('Are you sure you want to delete this subscription?')) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`/api/v1/subscriptions/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/subscriptions/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

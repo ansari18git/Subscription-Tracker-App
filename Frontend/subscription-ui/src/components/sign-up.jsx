@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const SignUp = ({ onSignUp }) => {
   const [form, setForm] = useState({
     name: '',
@@ -18,7 +21,7 @@ const SignUp = ({ onSignUp }) => {
     e.preventDefault();
     setMessage('');
     try {
-      const res = await fetch('/api/v1/auth/sign-up', {
+      const res = await fetch(`${API_BASE_URL}/auth/sign-up`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)

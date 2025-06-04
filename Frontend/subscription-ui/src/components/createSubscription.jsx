@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import currencyCodes from 'currency-codes';
 
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+
 const CreateSubscription = ({ onCreated }) => {
   const [form, setForm] = useState({
     name: '',
@@ -23,7 +27,7 @@ const CreateSubscription = ({ onCreated }) => {
     setMessage('');
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/v1/subscriptions', {
+       const res = await fetch(`${API_BASE_URL}/subscriptions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
