@@ -1,36 +1,26 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import cors from 'cors'; // ✅ FIXED HERE
 
 import { PORT } from './config/env.js';
 
 import userRouter from './routes/users.routes.js';
 import authRouter from './routes/auth.routes.js';
 import subscriptionRouter from './routes/subscriptions.routes.js';
-import connectToDatabase from './database/mongodb.js'
-import errorMiddleware from './middlewares/error.middleware.js'
-import arcjetMiddleware from './middlewares/arcjet.middleware.js'
-import workflowRouter from './routes/workflow.routes.js'
+import connectToDatabase from './database/mongodb.js';
+import errorMiddleware from './middlewares/error.middleware.js';
+import arcjetMiddleware from './middlewares/arcjet.middleware.js';
+import workflowRouter from './routes/workflow.routes.js';
 
 const app = express();
 
-const cors = require('cors');
-
 const allowedOrigins = ['https://subscription-tracker-app-pi.vercel.app'];
 
-
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: allowedOrigins,
   credentials: true,
 }));
 
-
-// OPTIONAL: handle preflight requests (for POST/PUT/DELETE)
 app.options('*', cors());
 
 app.use(express.json());
@@ -51,7 +41,6 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, async () => {
   console.log(`Subscription Tracker API is running on http://localhost:${PORT}`);
-
   await connectToDatabase();
 });
 
