@@ -15,12 +15,20 @@ const app = express();
 
 const cors = require('cors');
 
-const allowedOrigins = ['https://subscription-tracker-app-pi.vercel.app/'];
+const allowedOrigins = ['https://subscription-tracker-app-pi.vercel.app'];
+
 
 app.use(cors({
-  origin: allowedOrigins,
-  credentials: true, // if using cookies or auth headers
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
 }));
+
 
 // OPTIONAL: handle preflight requests (for POST/PUT/DELETE)
 app.options('*', cors());
