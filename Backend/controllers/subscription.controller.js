@@ -6,24 +6,24 @@ import { SERVER_URL } from '../config/env.js'
 
 dayjs.extend(utc)
 
-// Helper: create a cron expression based on startDate and frequency
+// Helper: build cron expression based on startDate and frequency
 const buildCronExpression = (startDate, frequency) => {
   const dt = dayjs(startDate).utc()
   const minute = dt.minute()
   const hour = dt.hour()
   const dayOfMonth = dt.date()
-  const month = dt.month() + 1 // Cron months are 1-12
-  const weekday = dt.day()    // 0-6 (Sunday-Saturday)
+  const month = dt.month() + 1
+  const weekday = dt.day()
 
   switch (frequency) {
     case 'daily':
-      return `${minute} ${hour} * * *`         // Every day at hour:minute
+      return `${minute} ${hour} * * *`
     case 'weekly':
-      return `${minute} ${hour} * * ${weekday}` // Once a week on the same weekday
+      return `${minute} ${hour} * * ${weekday}`
     case 'monthly':
-      return `${minute} ${hour} ${dayOfMonth} * *` // Once a month on the same date
+      return `${minute} ${hour} ${dayOfMonth} * *`
     case 'yearly':
-      return `${minute} ${hour} ${dayOfMonth} ${month} *` // Once a year on the same month and date
+      return `${minute} ${hour} ${dayOfMonth} ${month} *`
     default:
       throw new Error(`Unsupported frequency: ${frequency}`)
   }
@@ -31,27 +31,25 @@ const buildCronExpression = (startDate, frequency) => {
 
 export const createSubscription = async (req, res, next) => {
   try {
-    // Persist the subscription
     const subscription = await Subscription.create({
       ...req.body,
       user: req.user._id,
     })
 
-    // Build cron expression for the requested frequency
+    // Build cron for recurring schedule
     const cronExpression = buildCronExpression(
       subscription.startDate,
       subscription.frequency
     )
 
-    // Schedule a recurring reminder via QStash
-    await qstashClient.schedule({
+    // QStash publish supports cron for recurring jobs
+    await qstashClient.publish({
       url: `${SERVER_URL}/api/v1/workflows/subscription/reminder`,
       cron: cronExpression,
       body: JSON.stringify({ subscriptionId: subscription.id }),
       headers: { 'Content-Type': 'application/json' }
     })
 
-    // Respond with the created subscription
     return res.status(201).json({ success: true, data: subscription })
   } catch (error) {
     return next(error)
