@@ -1,9 +1,14 @@
+import 'dotenv/config';
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import cors from 'cors'; // ✅ FIXED HERE
+import cors from 'cors';
+
+// Debug environment variables
+console.log('> NODE_ENV:', process.env.NODE_ENV);
+console.log('> SERVER_URL:', process.env.SERVER_URL);
+console.log('> QSTASH_TOKEN length:', process.env.QSTASH_TOKEN?.length);
 
 import { PORT } from './config/env.js';
-
 import userRouter from './routes/users.routes.js';
 import authRouter from './routes/auth.routes.js';
 import subscriptionRouter from './routes/subscriptions.routes.js';
