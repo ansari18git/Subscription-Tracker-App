@@ -17,17 +17,13 @@ const buildCronExpression = (startDate, frequency) => {
 
   switch (frequency) {
     case 'daily':
-      // every day at hour:h minute:m
-      return `${m} ${h} * * *`
+      return `${m} ${h} * * *` // every day at h:m
     case 'weekly':
-      // every week on the same weekday at hour and minute
-      return `${m} ${h} * * ${W}`
+      return `${m} ${h} * * ${W}` // weekly on same weekday
     case 'monthly':
-      // every month on the same day
-      return `${m} ${h} ${D} * *`
+      return `${m} ${h} ${D} * *` // monthly on same date
     case 'yearly':
-      // once a year on the same month and day
-      return `${m} ${h} ${D} ${M} *`
+      return `${m} ${h} ${D} ${M} *` // yearly on same month and date
     default:
       throw new Error(`Unsupported frequency: ${frequency}`)
   }
@@ -43,8 +39,8 @@ export const createSubscription = async (req, res, next) => {
     // Build cron expression for recurring reminders
     const cron = buildCronExpression(subscription.startDate, subscription.frequency)
 
-    // Schedule recurring job via QStash
-    await qstashClient.schedule({
+    // Schedule recurring job via QStash using publish with cron
+    await qstashClient.publish({
       url: `${SERVER_URL}/api/v1/workflows/subscription/reminder`,
       cron,
       body: JSON.stringify({ subscriptionId: subscription.id }),
