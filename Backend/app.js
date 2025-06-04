@@ -13,6 +13,18 @@ import workflowRouter from './routes/workflow.routes.js'
 
 const app = express();
 
+const cors = require('cors');
+
+const allowedOrigins = ['https://subscription-tracker-app-pi.vercel.app/'];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true, // if using cookies or auth headers
+}));
+
+// OPTIONAL: handle preflight requests (for POST/PUT/DELETE)
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
