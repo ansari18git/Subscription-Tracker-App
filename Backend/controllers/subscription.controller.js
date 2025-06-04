@@ -6,7 +6,7 @@ import { SERVER_URL } from '../config/env.js'
 
 dayjs.extend(utc)
 
-// Helper: build cron expression based on startDate and frequency
+// Helper to build cron expression based on startDate and frequency
 const buildCronExpression = (startDate, frequency) => {
   const dt = dayjs(startDate).utc()
   const minute = dt.minute()
@@ -31,20 +31,25 @@ const buildCronExpression = (startDate, frequency) => {
 
 export const createSubscription = async (req, res, next) => {
   try {
+    // Persist subscription
     const subscription = await Subscription.create({
       ...req.body,
       user: req.user._id,
     })
 
-    // Build cron for recurring schedule
+    // Build cron for recurring
     const cronExpression = buildCronExpression(
       subscription.startDate,
       subscription.frequency
     )
 
-    // QStash publish supports cron for recurring jobs
+    // Construct destination URL
+    const destination = `${SERVER_URL.replace(/\/+$/,'')}/api/v1/workflows/subscription/reminder`
+    console.log('Scheduling QStash job to:', destination, 'with cron:', cronExpression)
+
+    // Schedule recurring job via QStash
     await qstashClient.publish({
-      url: `${SERVER_URL}/api/v1/workflows/subscription/reminder`,
+      url: destination,
       cron: cronExpression,
       body: JSON.stringify({ subscriptionId: subscription.id }),
       headers: { 'Content-Type': 'application/json' }
@@ -52,14 +57,15 @@ export const createSubscription = async (req, res, next) => {
 
     return res.status(201).json({ success: true, data: subscription })
   } catch (error) {
+    // Log full error for debugging
+    console.error('Error scheduling QStash job:', error)
     return next(error)
   }
 }
 
 export const getUserSubscriptions = async (req, res, next) => {
   try {
-    const userId = req.user._id
-    const subscriptions = await Subscription.find({ user: userId })
+    const subscriptions = await Subscription.find({ user: req.user._id })
     return res.status(200).json({ success: true, data: subscriptions })
   } catch (error) {
     return next(error)
@@ -68,9 +74,7 @@ export const getUserSubscriptions = async (req, res, next) => {
 
 export const deleteSubscription = async (req, res, next) => {
   try {
-    const userId = req.user._id
-    const { id } = req.params
-    const deleted = await Subscription.findOneAndDelete({ _id: id, user: userId })
+    const deleted = await Subscription.findOneAndDelete({ _id: req.params.id, user: req.user._id })
     if (!deleted) {
       return res.status(404).json({ success: false, error: 'Subscription not found' })
     }
