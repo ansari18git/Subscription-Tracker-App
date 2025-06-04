@@ -6,24 +6,24 @@ import { SERVER_URL } from '../config/env.js'
 
 dayjs.extend(utc)
 
-// Map frequency to cron expression based on subscription startDate
+// Helper: create a cron expression based on startDate and frequency
 const buildCronExpression = (startDate, frequency) => {
   const dt = dayjs(startDate).utc()
-  const m = dt.minute()
-  const h = dt.hour()
-  const D = dt.date()
-  const W = dt.day() // 0 (Sunday) - 6
-  const M = dt.month() + 1 // 1 - 12
+  const minute = dt.minute()
+  const hour = dt.hour()
+  const dayOfMonth = dt.date()
+  const month = dt.month() + 1 // Cron months are 1-12
+  const weekday = dt.day()    // 0-6 (Sunday-Saturday)
 
   switch (frequency) {
     case 'daily':
-      return `${m} ${h} * * *` // every day at h:m
+      return `${minute} ${hour} * * *`         // Every day at hour:minute
     case 'weekly':
-      return `${m} ${h} * * ${W}` // weekly on same weekday
+      return `${minute} ${hour} * * ${weekday}` // Once a week on the same weekday
     case 'monthly':
-      return `${m} ${h} ${D} * *` // monthly on same date
+      return `${minute} ${hour} ${dayOfMonth} * *` // Once a month on the same date
     case 'yearly':
-      return `${m} ${h} ${D} ${M} *` // yearly on same month and date
+      return `${minute} ${hour} ${dayOfMonth} ${month} *` // Once a year on the same month and date
     default:
       throw new Error(`Unsupported frequency: ${frequency}`)
   }
@@ -31,25 +31,30 @@ const buildCronExpression = (startDate, frequency) => {
 
 export const createSubscription = async (req, res, next) => {
   try {
+    // Persist the subscription
     const subscription = await Subscription.create({
       ...req.body,
       user: req.user._id,
     })
 
-    // Build cron expression for recurring reminders
-    const cron = buildCronExpression(subscription.startDate, subscription.frequency)
+    // Build cron expression for the requested frequency
+    const cronExpression = buildCronExpression(
+      subscription.startDate,
+      subscription.frequency
+    )
 
-    // Schedule recurring job via QStash using publish with cron
-    await qstashClient.publish({
+    // Schedule a recurring reminder via QStash
+    await qstashClient.schedule({
       url: `${SERVER_URL}/api/v1/workflows/subscription/reminder`,
-      cron,
+      cron: cronExpression,
       body: JSON.stringify({ subscriptionId: subscription.id }),
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     })
 
-    res.status(201).json({ success: true, data: subscription })
-  } catch (e) {
-    next(e)
+    // Respond with the created subscription
+    return res.status(201).json({ success: true, data: subscription })
+  } catch (error) {
+    return next(error)
   }
 }
 
@@ -57,9 +62,9 @@ export const getUserSubscriptions = async (req, res, next) => {
   try {
     const userId = req.user._id
     const subscriptions = await Subscription.find({ user: userId })
-    res.status(200).json({ success: true, data: subscriptions })
-  } catch (e) {
-    next(e)
+    return res.status(200).json({ success: true, data: subscriptions })
+  } catch (error) {
+    return next(error)
   }
 }
 
@@ -71,8 +76,8 @@ export const deleteSubscription = async (req, res, next) => {
     if (!deleted) {
       return res.status(404).json({ success: false, error: 'Subscription not found' })
     }
-    res.status(200).json({ success: true, message: 'Subscription deleted' })
-  } catch (e) {
-    next(e)
+    return res.status(200).json({ success: true, message: 'Subscription deleted' })
+  } catch (error) {
+    return next(error)
   }
 }
