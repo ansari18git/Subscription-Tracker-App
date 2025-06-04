@@ -5,7 +5,7 @@ import SignIn from './components/sign-in.jsx';
 import CreateSubscription from './components/createSubscription.jsx';
 import ViewSubscription from './components/viewSubscription.jsx';
 import './App.css';
-import Footer from './components/Footer.jsx';
+import Footer from './components/footer.jsx';
 
 function MainPage({ handleSignIn, handleSignOut, isSignedIn, setShowSignUp, showSignUp, setShowView, showView }) {
   const navigate = useNavigate();
