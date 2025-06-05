@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
+import currencyCodes from 'currency-codes';     
 
-const currencyCodes = require('currency-codes');
-const allCurrencyCodes = currencyCodes.data.map(c => c.code);
+const allCurrencyCodes = currencyCodes.data.map(c => c.code); 
 
 const subscriptionSchema = new mongoose.Schema({
 
 name:{
-    type: String,
+    type: String,   
     required: [true, "Subscription name is required"],
     trim: true,
     minLength: 2,
@@ -23,7 +23,7 @@ currency: {
     required: [true, "Currency is required"],
     enum: {
       values: allCurrencyCodes,
-      message: "{VALUE} is not a supported currency code"
+      message: '{VALUE} is not a supported currency code'
     },
     default: 'INR'
   },
