@@ -68,6 +68,24 @@ const CreateSubscription = ({ onCreated }) => {
           <input type="text" name="category" className="form-control" placeholder="Category" value={form.category} onChange={handleChange} required />
         </div>
       </div>
+      <div className="row g-3 mt-3">
+  
+  <div className="col-12">
+    <select
+      name="paymentMethod"
+      className="form-select"
+      value={form.paymentMethod}
+      onChange={handleChange}
+      required
+    >
+      <option value="">Select Payment Method</option>
+      <option value="card">Card</option>
+      <option value="upi">UPI</option>
+      <option value="netbanking">Net Banking</option>
+      <option value="paypal">PayPal</option>
+    </select>
+  </div>
+</div>
 
       <button type="submit" className="btn btn-primary w-100 fw-bold mt-4">Create</button>
       {message && <div className="mt-3 text-center text-success">{message}</div>}
