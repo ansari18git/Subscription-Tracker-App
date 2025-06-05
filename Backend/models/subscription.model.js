@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+const currencyCodes = require('currency-codes');
+const allCurrencyCodes = currencyCodes.data.map(c => c.code);
+
 const subscriptionSchema = new mongoose.Schema({
 
 name:{
@@ -15,13 +18,17 @@ price:{
     min: [0,'price must be greater than or equal to 0']
 
 },
-currency:{
+currency: {
     type: String,
     required: [true, "Currency is required"],
-    enum: ['USD', 'EUR', 'GBP', 'INR', 'JPY'],
-    default:'INR'
+    enum: {
+      values: allCurrencyCodes,
+      message: "{VALUE} is not a supported currency code"
+    },
+    default: 'INR'
+  },
 
-},
+
 frequency:{
     type: String,
     enum:['daily', 'weekly', 'monthly', 'yearly']
