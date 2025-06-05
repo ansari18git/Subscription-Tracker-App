@@ -7,26 +7,26 @@ import ViewSubscription from './components/viewSubscription.jsx';
 import './App.css';
 import Footer from './components/Footer.jsx';
 
-function MainPage({ handleSignIn, handleSignOut, isSignedIn, setShowSignUp, showSignUp, setShowView, showView }) {
+function MainPage({ handleSignIn, handleSignOut, isSignedIn, setShowSignUp, showSignUp }) {
   const navigate = useNavigate();
 
   return (
-    <div className="container min-vh-100 d-flex align-items-center justify-content-center">
-      <div className="glass-card">
+    <div className="container-fluid px-3 px-md-5 min-vh-100 d-flex align-items-center justify-content-center">
+      <div className="glass-card mx-auto">
         {!isSignedIn ? (
           <>
-            <div className="mb-4 d-flex justify-content-center gap-2">
+            <div className="mb-4 d-flex justify-content-center gap-2 flex-wrap">
               <button
                 onClick={() => setShowSignUp(true)}
                 disabled={showSignUp}
-                className={`btn ${showSignUp ? "btn-danger" : "btn-outline-danger"}`}
+                className={`btn ${showSignUp ? 'btn-danger' : 'btn-outline-danger'}`}
               >
                 Sign Up
               </button>
               <button
                 onClick={() => setShowSignUp(false)}
                 disabled={!showSignUp}
-                className={`btn ${!showSignUp ? "btn-primary" : "btn-outline-primary"}`}
+                className={`btn ${!showSignUp ? 'btn-primary' : 'btn-outline-primary'}`}
               >
                 Sign In
               </button>
@@ -36,7 +36,7 @@ function MainPage({ handleSignIn, handleSignOut, isSignedIn, setShowSignUp, show
             </div>
           </>
         ) : (
-          <div>
+          <>
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h2 className="h5 text-secondary fw-bold m-0">Subscription Tracker</h2>
               <button
@@ -48,12 +48,12 @@ function MainPage({ handleSignIn, handleSignOut, isSignedIn, setShowSignUp, show
             </div>
             <CreateSubscription />
             <button
-              className="mt-4 w-100 btn btn-primary"
+              className="mt-4 w-100 btn btn-primary btn-custom"
               onClick={() => navigate('/subscriptions')}
             >
               View Subscriptions
             </button>
-          </div>
+          </>
         )}
       </div>
     </div>
@@ -69,18 +69,16 @@ function SubscriptionsPage({ handleSignOut }) {
   };
 
   return (
-    <div className="container min-vh-100 d-flex flex-column align-items-center justify-content-center">
-      <div className="glass-card w-100" style={{ maxWidth: 800 }}>
-        <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="container-fluid px-3 px-md-5 min-vh-100 d-flex flex-column align-items-center justify-content-center">
+      <div className="glass-card w-100 mx-auto" style={{ maxWidth: '800px' }}>
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap">
           <button
             className="btn btn-secondary btn-custom fw-bold"
             onClick={() => navigate(-1)}
           >
             &larr; Back
           </button>
-          <h2 className="h5 text-secondary fw-bold m-0 flex-grow-1 text-center">
-            Your Subscriptions
-          </h2>
+          <h2 className="h5 text-secondary fw-bold m-0 flex-grow-1 text-center">Your Subscriptions</h2>
           <button
             onClick={handleSignOutAndRedirect}
             className="btn btn-danger btn-custom fw-bold"
@@ -98,7 +96,7 @@ function App() {
   const [showSignUp, setShowSignUp] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState(!!localStorage.getItem('token'));
 
-  const handleSignIn = (token, user) => {
+  const handleSignIn = (token) => {
     localStorage.setItem('token', token);
     setIsSignedIn(true);
   };
@@ -106,7 +104,7 @@ function App() {
   const handleSignOut = () => {
     localStorage.removeItem('token');
     setIsSignedIn(false);
-    setShowSignUp(false);
+    setShowSignUp(true);
   };
 
   return (
@@ -120,16 +118,14 @@ function App() {
                 handleSignIn={handleSignIn}
                 handleSignOut={handleSignOut}
                 isSignedIn={isSignedIn}
-                setShowSignUp={setShowSignUp}
                 showSignUp={showSignUp}
+                setShowSignUp={setShowSignUp}
               />
             }
           />
           <Route
             path="/subscriptions"
-            element={
-              <SubscriptionsPage handleSignOut={handleSignOut} />
-            }
+            element={<SubscriptionsPage handleSignOut={handleSignOut} />}
           />
         </Routes>
         <Footer />

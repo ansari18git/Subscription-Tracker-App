@@ -1,52 +1,30 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
-/* New background gradient */
 body {
   background: linear-gradient(135deg, #8b99d6 0%, #bf9ae4 100%);
   min-height: 100vh;
-  color: #111; /* Make all body text black */
+  color: #111;
 }
 
-/* Glass card with a blue tint */
 .glass-card {
   background: rgba(179, 190, 240, 0.18);
   border-radius: 18px;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 2rem;
   max-width: 400px;
   width: 100%;
-  color: #111; /* Make all card text black */
+  color: #111;
 }
 
-/* All headings and form titles black and bold */
-h1, h2, h3, h4, h5, h6,
-.form-title, .glass-card h2 {
-  color: #111 !important;
-  font-weight: bold !important;
-}
-
-/* Make badge text black */
-.badge.bg-primary {
-  background-color: #9490e2 !important;
-  color: #111 !important;
-}
-
-/* Optional: Change button color */
-.btn,
-.btn-primary,
-.btn-danger,
-.btn-outline-primary,
-.btn-outline-danger {
-  color: #111 !important;
+.btn-custom,
+.btn {
+  min-width: 100px;
+  min-height: 40px;
   font-weight: bold;
-}
-.btn-primary:hover, .btn-primary:focus {
-  background-color: #4f3cc9;
-  border-color: #4f3cc9;
-  color: #fff;
+  font-size: 1rem;
+  border-radius: 8px;
 }
 
 .footer {
@@ -56,34 +34,25 @@ h1, h2, h3, h4, h5, h6,
   letter-spacing: 0.5px;
 }
 
-/* Add to e:\Backend-Course\Frontend\subscription-ui\src\App.css */
-.btn-custom {
-  min-width: 100px;
-  min-height: 40px;
-  font-weight: bold;
-  font-size: 1rem;
-  border-radius: 8px;
+/* Mobile adjustments */
+@media (max-width: 576px) {
+  .glass-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  .footer {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
 }
 
-.badge-status {
-  padding: 0.35em 0.8em;
-  font-size: 0.85em;
-  border-radius: 0.5em;
-  font-weight: bold;
-  text-transform: capitalize;
-  background: #eee;
-  color: #222;
-  display: inline-block;
-}
-.badge-status.active {
-  background: #d4edda;
-  color: #218838;
-}
-.badge-status.expired {
-  background: #f8d7da;
-  color: #c82333;
-}
-.badge-status.cancelled {
-  background: #ffeeba;
-  color: #856404;
+/* Desktop enhancements */
+@media (min-width: 992px) {
+  .glass-card h2,
+  .form-title {
+    font-size: 1.5rem;
+  }
+  .btn-custom {
+    font-size: 1.1rem;
+  }
 }
