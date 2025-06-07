@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const SignUp = ({ onSignUp }) => {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = e => {
@@ -16,8 +14,7 @@ const SignUp = ({ onSignUp }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setMessage('');
     setLoading(true);
 
     try {
@@ -28,16 +25,15 @@ const SignUp = ({ onSignUp }) => {
       });
 
       const data = await res.json();
-
       if (res.ok) {
-        setSuccess('Signup successful! Please sign in.');
+        setMessage('Signup successful! Please sign in.');
         setForm({ name: '', email: '', password: '' });
         if (onSignUp) onSignUp();
       } else {
-        setError(data.error || 'Signup failed');
+        setMessage(data.error || 'Signup failed');
       }
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
+    } catch (error) {
+      setMessage('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -57,7 +53,6 @@ const SignUp = ({ onSignUp }) => {
             value={form.name}
             onChange={handleChange}
             required
-            disabled={loading}
           />
         </div>
         <div className="col-12 col-md-6">
@@ -69,7 +64,6 @@ const SignUp = ({ onSignUp }) => {
             value={form.email}
             onChange={handleChange}
             required
-            disabled={loading}
           />
         </div>
       </div>
@@ -84,7 +78,6 @@ const SignUp = ({ onSignUp }) => {
             value={form.password}
             onChange={handleChange}
             required
-            disabled={loading}
           />
           <span
             className="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -98,14 +91,20 @@ const SignUp = ({ onSignUp }) => {
 
       <button
         type="submit"
-        className="btn btn-primary w-100 fw-bold mt-4"
+        className="btn btn-primary w-100 fw-bold mt-4 d-flex align-items-center justify-content-center gap-2"
         disabled={loading}
       >
-        {loading ? 'Signing Up...' : 'Sign Up'}
+        {loading ? (
+          <>
+            <span className="spinner"></span>
+            Signing Up...
+          </>
+        ) : (
+          'Sign Up'
+        )}
       </button>
 
-      {success && <div className="mt-3 text-center text-success">{success}</div>}
-      {error && <div className="mt-3 text-center text-danger">{error}</div>}
+      {message && <div className="mt-3 text-center text-danger">{message}</div>}
     </form>
   );
 };
